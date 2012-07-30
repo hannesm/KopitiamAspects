@@ -12,12 +12,14 @@ public class CoqExpression extends SingleNameReference {
 	private String content;
 	
 	public CoqExpression(char[] source, int start, int end) {
-		super(source, end);
-		//super(source, (((long) start) << 32) + end);
+		super(source, (((long) start) << 32) + end);
+   		this.sourceStart = start;
+		this.sourceEnd = end;
+
 		content = new String(source);
 	}
 	
-	public StringBuffer printStatement(int indent, StringBuffer output) {
+	public StringBuffer printExpression(int indent, StringBuffer output) {
 		System.out.println("printing coqexpr");
 		output.append("<%");
 		output.append(content);
@@ -41,18 +43,5 @@ public class CoqExpression extends SingleNameReference {
 	
 	public void traverse (ASTVisitor visitor, BlockScope scope) {
 		System.out.println("visiting coqexpression " + content);
-	}
-
-	public void resolve(BlockScope scope) {
-		System.out.println("resolve called on CoqE");
-	}
-
-	@Override
-	public StringBuffer printExpression(int indent, StringBuffer output) {
-		System.out.println("printing coqexpr");
-		output.append("<%");
-		output.append(content);
-		output.append("%>");
-		return output;
 	}
 }
