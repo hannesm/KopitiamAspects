@@ -28,7 +28,6 @@ public privileged aspect KopitiamJDTAspect {
 	}
 	
 	private CoqTxt c;
-	//private boolean enabled = false;
 	
     int around(Scanner t) : //cflowbelow(execution(void Parser.parse()))\
     		target(t) && call(int Scanner.getNextToken() throws InvalidInputException) {
@@ -37,20 +36,14 @@ public privileged aspect KopitiamJDTAspect {
     		char[] source = t.getSource();
     		int pos = t.currentPosition;
     		if (source[pos++] == '%') {
-	    		//t.startPosition = pos;
     			int start = pos;
-    			//System.out.println("bla at " + start);
     			try { while (source[pos++] != '%' || source[pos++] != '>') ; }
     			catch (ArrayIndexOutOfBoundsException i) { return token; }
-				//System.out.println("boo at " + pos);
     			t.currentPosition = pos;
-    			//t.lastCommentLinePosition = t.currentPosition;
     			int end = pos - 2;
     			char[] coq = CharOperation.subarray(source, start, end);
     			c = new CoqTxt(start, end, coq);
-    			//enabled = true;
     			System.out.println("created inner " + new String(c.content));
-    			//t.recordComment(TerminalTokens.TokenNameCOMMENT_LINE);
     			return TerminalTokens.TokenNameSEMICOLON;
     		}
     	}
@@ -114,38 +107,4 @@ public privileged aspect KopitiamJDTAspect {
     	if (!(fieldDecl instanceof TypeSpec))
     	  proceed(pr, sourceName, fieldDecl);
     }
-
-/*	void around (Parser p) : target(p) && call(protected void consumeExitVariableWithInitialization()) {
-	  if (p.astStack[p.astPtr] instanceof CoqExpression) {
-	    //p.expressionLengthPtr--;
-	    //p.expressionPtr--;
-	    //p.intPtr--;
-	    p.astPtr--;
-	    System.out.println("wuff! consumeexitvariablebla");
-	  } else
-	    proceed(p);
-	}
-
-	void around (Parser p) : target(p) && call(protected void consumeAssignment()) {
-	  if (p.astStack[p.astPtr] instanceof CoqExpression) {
-//	    p.intPtr--;
-//	    p.expressionPtr--;
-//	    p.expressionLengthPtr--;
-	    System.out.println("barffff consumeAssignment");
-	  } else
-	    proceed(p);
-	} */
-/*	
-	void around (Parser p) : target(p) && call(protected void consumeFieldDeclaration()) {
-	  if (p.astStack[p.astPtr] instanceof CoqExpression) {
-	    System.out.println("wuffff consumefielddeclaration");
-	  } else
-	    proceed(p);
-	}
-	
-    before() : cflowbelow(execution(void BundleActivator.start(BundleContext))) 
-    	&& call(void PrintStream.println(String))
-    	&& !within(KopitiamJDTAspect) {
-    	System.out.println("Hi from Aspect ;-)");
-    } */
 }

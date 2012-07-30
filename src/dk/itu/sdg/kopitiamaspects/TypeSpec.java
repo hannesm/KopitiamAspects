@@ -18,7 +18,6 @@ public class TypeSpec extends Initializer {
 		this.initialization = expr;
 		this.declarationSourceStart = this.sourceStart = start;
 		this.declarationSourceEnd = this.sourceEnd = end;
-//		this.bodyStart = this.bodyEnd = end;
 	}
 
 	@Override
