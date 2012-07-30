@@ -43,7 +43,6 @@ public privileged aspect KopitiamJDTAspect {
     			int end = pos - 2;
     			char[] coq = CharOperation.subarray(source, start, end);
     			c = new CoqTxt(start, end, coq);
-    			System.out.println("created inner " + new String(c.content));
     			return TerminalTokens.TokenNameSEMICOLON;
     		}
     	}
@@ -53,10 +52,8 @@ public privileged aspect KopitiamJDTAspect {
     private boolean hasParsedSpec = false;
 
     void around (Parser p, int type) : target(p) && call(protected void consumeToken(int)) && args(type) {
-        System.out.println("blaaaa");
     	if (type == TerminalTokens.TokenNameSEMICOLON) {
     		if (c != null && c.start - 2 == p.scanner.startPosition) {
-    			System.out.println("consumetoken: from " + (c.start - 2) + " to " + (c.end + 1) + ": " + new String(c.content));
                 ASTNode currentNode = p.astPtr > -1 ? p.astStack[p.astPtr] : null ;
     			CoqExpression ce = new CoqExpression(c.content, c.start - 2, c.end + 1);
 				if (currentNode instanceof TypeDeclaration || currentNode instanceof FieldDeclaration || currentNode instanceof AbstractMethodDeclaration) {
@@ -64,23 +61,17 @@ public privileged aspect KopitiamJDTAspect {
 					p.pushOnAstStack(new TypeSpec(ce, c.start - 2 , c.end + 1));
 					return;
 				} else if (currentNode instanceof Statement) {
-					System.out.println("pushed statement onto aststack");
 					hasParsedSpec = true;
 					p.pushOnAstStack(new StatementSpec(ce, c.start - 2, c.end + 1));
 					return;
 				}
     		}
     	}
-	    if (c == null)
-	  		System.out.println("consumetoken: got null, but c is null as well :/ ");
-    	else
-	     	System.out.println("consumetoken: got null, but c is null as well :/ " + c.start + " scanner " +  p.scanner.startPosition);
     	proceed(p, type);
     }
     
     void around (Parser p) : target(p) && call(void consumeEmptyTypeDeclaration()) {
     	if (hasParsedSpec) {
-    	  System.out.println("called around consumeemptytypedeclaration");
     	  hasParsedSpec = false;
     	  p.flushCommentsDefinedPriorTo(p.endStatementPosition);
     	} else
@@ -89,7 +80,6 @@ public privileged aspect KopitiamJDTAspect {
 	
     void around (Parser p) : target(p) && call(void consumeEmptyStatement()) {
     	if (hasParsedSpec) {
-    	  System.out.println("called around consumeemptystatement");
     	  hasParsedSpec = false;
     	  p.flushCommentsDefinedPriorTo(p.endStatementPosition);
     	} else
@@ -98,8 +88,6 @@ public privileged aspect KopitiamJDTAspect {
 
     void around (Parser p) : target(p) && call(void parse()) {
       proceed(p);
-      if (hasParsedSpec)
-        System.out.println("set enabled to false in after parse");
       hasParsedSpec = false;
     }
     
