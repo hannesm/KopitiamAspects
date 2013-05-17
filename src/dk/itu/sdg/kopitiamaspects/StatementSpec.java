@@ -12,6 +12,11 @@ public class StatementSpec extends EmptyStatement {
 		super(startPosition, endPosition);
 		this.expression = e;
 	}
+	
+	public int complainIfUnreachable(FlowInfo flowInfo, BlockScope scope, int complaintLevel, boolean endOfBlock) {
+		//shut up!
+		return complaintLevel;
+	}
 
 	public int complainIfUnreachable(FlowInfo flowInfo, BlockScope scope, int previousComplaintLevel) {
 		//shut up!
