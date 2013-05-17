@@ -14,6 +14,8 @@ import org.eclipse.jdt.internal.compiler.ast.TypeDeclaration;
 import org.eclipse.jdt.internal.compiler.parser.TerminalTokens;
 import org.eclipse.jdt.internal.compiler.problem.ProblemReporter;
 
+import org.eclipse.jdt.core.dom.EmptyStatement;
+
 public privileged aspect KopitiamJDTAspect {
 	class CoqTxt {
 		int start;
@@ -28,6 +30,21 @@ public privileged aspect KopitiamJDTAspect {
 	}
 	
 	private CoqTxt c;
+	
+	EmptyStatement around(org.eclipse.jdt.core.dom.ASTConverter a,
+			org.eclipse.jdt.internal.compiler.ast.EmptyStatement es) :
+			target(a) && call(EmptyStatement convert(
+					org.eclipse.jdt.internal.compiler.ast.EmptyStatement))
+			&& args(es) {
+		EmptyStatement domStatement = proceed(a, es);
+		if (es instanceof StatementSpec) {
+			StatementSpec ss = (StatementSpec)es;
+			if (ss.expression instanceof CoqExpression)
+				domStatement.setProperty("dk.itu.sdg.kopitiam.contentExpr",
+						((CoqExpression)ss.expression).content.trim());
+		}
+		return domStatement;
+	}
 	
     int around(Scanner t) : //cflowbelow(execution(void Parser.parse()))\
     		target(t) && call(int Scanner.getNextToken() throws InvalidInputException) {
