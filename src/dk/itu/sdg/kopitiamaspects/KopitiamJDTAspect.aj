@@ -41,7 +41,7 @@ public privileged aspect KopitiamJDTAspect {
 			StatementSpec ss = (StatementSpec)es;
 			if (ss.expression instanceof CoqExpression)
 				domStatement.setProperty("dk.itu.sdg.kopitiam.contentExpr",
-						((CoqExpression)ss.expression).content.trim());
+						((CoqExpression)ss.expression).content);
 		}
 		return domStatement;
 	}
